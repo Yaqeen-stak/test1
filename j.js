@@ -10,6 +10,7 @@ function Flight (flyingFrom , flyingTo , capacity , reservedSeats){
     this.reservedSeats = reservedSeats;
     this.availableSeats = 0;
     this.tickets = [];
+    allFlight.push(this)
   
 }
 Flight.prototype.setAvailableSeats = function ( ) {
@@ -50,10 +51,10 @@ Flight.prototype.addRow = function(){
 }
 
 
-var firstFlight = new Flight('Amman' , 'Paris' , 150  , 15);
-firstFlight.setAvailableSeats();
-firstFlight.fillTickets();
-console.log(firstFlight);
+// var firstFlight = new Flight('Amman' , 'Paris' , 150  , 15);
+// firstFlight.setAvailableSeats();
+// firstFlight.fillTickets();
+// console.log(firstFlight);
 function createHeader (){
 
     // Create the header raw
@@ -74,32 +75,59 @@ var flightForm = document.getElementById('flightForm');
 flightForm.addEventListener('submit',addFlight); // for all the flightForm to get target of any element inside thos filed
 
 function addFlight(event){
-  console.log("xxxxxxxxxxx");
   event.preventDefault();
 
   var form = event.target.flyingFrom.value
-  console.log("xxxxxxx" ,form);
   /////////////////////// this flyingFrom is the id for element inside the form (check it)
   //////////////////////
 
-  var to = event.target.flyingTo.value
-  console.log("xxxxxxx" ,to);
-
-  var capacity = event.target.capacity.value
-  console.log("xxxxxxx" ,capacity);
-
-  var reserved = event.target.reserved.value
-  console.log("xxxxxxx" ,reserved);
+  var to = event.target.flyingTo.value;
+  var capacity = event.target.capacity.value;
+  var reserved = event.target.reserved.value;
 
 
   var addedFlight = new Flight (form,to,capacity,reserved);
   addedFlight.setAvailableSeats();
   addedFlight.fillTickets();
 
-  allFlight.push(addedFlight);
 
   addedFlight.addRow();
+  calculateOverAllCapacity();
+
+  localStorage.setItem('All flights',JSON.stringify(allFlight));
 
 }
 
+
+function calculateOverAllCapacity(){
+    let ovarAllCapacity = 0;
+    console.log(allFlight);
+    for (var i = 0 ; i < allFlight.length ; i++){
+        ovarAllCapacity+=Number(allFlight[i].capacity)
+        console.log(allFlight[i].capacity);
+    }
+
+    document.getElementById('ovarAllCapacity').textContent="over all Capacity is "+ ovarAllCapacity;
+
+}
+
+
+
+
+
+
+if (localStorage.getItem('All flights')){
+    let oldData = JSON.parse(localStorage.getItem('All flights'));
+
+
+    for (var i = 0 ; i < oldData.length ; i++){
+        var A = new Flight (oldData[i].flyingFrom,oldData[i].flyingTo,oldData[i].capacity,oldData[i].reservedSeats)
+
+        A.setAvailableSeats();
+        A.fillTickets();
+        A.addRow()
+    }
+}
+
+calculateOverAllCapacity();
 
